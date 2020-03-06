@@ -1,7 +1,9 @@
 import React, { useMemo } from "react";
-import { createEditor, Transforms, Editor, Text, Node } from "slate";
+import { createEditor, Node } from "slate";
 import { Slate, Editable, withReact } from "slate-react";
 import { EditeurT } from "./interfaces";
+import { withHistory } from "slate-history";
+import { isEqual } from "lodash";
 
 export interface BlocI {
   value: Node[];
@@ -10,47 +12,29 @@ export interface BlocI {
 }
 
 const Bloc = ({ value, onChange, refEditor }: BlocI) => {
-  const editor = useMemo(() => withReact(createEditor()), []);
+  const editor = useMemo(() => withReact(withHistory(createEditor())), []);
 
   return (
-    <Slate editor={editor} value={value} onChange={val => onChange(val)}>
+    <Slate
+      editor={editor}
+      value={value}
+      onChange={val => {
+        if (!isEqual(value, val)) {
+          onChange(val);
+        }
+      }}
+    >
       <Editable
-        onFocus={() => refEditor(editor)}
+        onFocus={() => {
+          refEditor(editor);
+        }}
         spellCheck
         renderLeaf={props => <Leaf {...props} />}
-        placeholder="Enter some text..."
-        onDOMBeforeInput={(event: any) => {
-          switch (event.inputType) {
-            case "formatBold":
-              return toggleFormat(editor, "bold");
-            case "formatItalic":
-              return toggleFormat(editor, "italic");
-            case "formatUnderline":
-              return toggleFormat(editor, "underline");
-          }
-        }}
       />
     </Slate>
   );
 };
 export default Bloc;
-
-const toggleFormat = (editor: any, format: any) => {
-  const isActive = isFormatActive(editor, format);
-  Transforms.setNodes(
-    editor,
-    { [format]: isActive ? null : true },
-    { match: Text.isText, split: true }
-  );
-};
-
-const isFormatActive = (editor: any, format: any) => {
-  const [match] = Editor.nodes(editor, {
-    match: n => n[format] === true,
-    mode: "all"
-  });
-  return !!match;
-};
 
 const Leaf = ({ attributes, children, leaf }: any) => {
   if (leaf.bold) {

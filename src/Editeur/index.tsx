@@ -1,11 +1,12 @@
-import React, { useState } from "react";
-import { Node } from "slate";
+import React, { useState, useEffect } from "react";
+import { Node, Transforms } from "slate";
 import * as S from "./Styled";
 import Bloc from "./Bloc";
 import { EditeurT } from "./interfaces";
+import ToolBar from "./Toolbar";
 
 const Editeur: React.FC = () => {
-  const [editor, setEditor] = useState<EditeurT>(null);
+  const [editor, setEditor] = useState<EditeurT>({} as EditeurT);
   const [value, setValue] = useState<Node[][]>([
     [
       {
@@ -21,46 +22,34 @@ const Editeur: React.FC = () => {
     ]
   ]);
 
-  const handleChange = (val: Node[], index: number) => {
+  const changeValue = (val: Node[], index: number) => {
     let newState = [...value];
     newState[index] = val;
     setValue(newState);
   };
 
+  const changeEditor = (val: EditeurT) => {
+    Transforms.deselect(editor);
+    setEditor(val);
+  };
+
+  useEffect(() => {}, []);
   return (
     <S.EditeurCtn>
-      {value.map((val: Node[], index: number) => {
-        return (
-          <Bloc
-            refEditor={ref => setEditor(ref)}
-            value={val}
-            onChange={el => handleChange(el, index)}
-          />
-        );
-      })}
+      <ToolBar editor={editor} />
+      <S.ChampEdition>
+        {value.map((val: Node[], index: number) => {
+          return (
+            <Bloc
+              key={`Bloc-${index}`}
+              refEditor={ref => changeEditor(ref)}
+              value={val}
+              onChange={el => changeValue(el, index)}
+            />
+          );
+        })}
+      </S.ChampEdition>
     </S.EditeurCtn>
   );
 };
 export default Editeur;
-/*
-const ToolBar = ({ editor }: any) => {
-  const handle = () => {
-    Transforms.setNodes(
-      editor,
-      { bold: !isFormatActive(editor, "bold") },
-      { match: Text.isText, split: true }
-    );
-  };
-  return (
-    <div
-      onMouseDown={e => {
-        e.preventDefault();
-
-        handle();
-      }}
-    >
-      GRAS
-    </div>
-  );
-};
-*/
