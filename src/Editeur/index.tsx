@@ -37,18 +37,20 @@ const Editeur: React.FC = () => {
   return (
     <S.EditeurCtn>
       <ToolBar editor={editor} />
-      <S.ChampEdition>
-        {value.map((val: Node[], index: number) => {
-          return (
-            <Bloc
-              key={`Bloc-${index}`}
-              refEditor={ref => changeEditor(ref)}
-              value={val}
-              onChange={el => changeValue(el, index)}
-            />
-          );
-        })}
-      </S.ChampEdition>
+      <S.ChampEditionCtn>
+        <S.ChampEdition>
+          {value.map((val: Node[], index: number) => {
+            return (
+              <Bloc
+                key={`Bloc-${index}`}
+                refEditor={ref => changeEditor(ref)}
+                value={val}
+                onChange={el => changeValue(el, index)}
+              />
+            );
+          })}
+        </S.ChampEdition>
+      </S.ChampEditionCtn>
     </S.EditeurCtn>
   );
 };

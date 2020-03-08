@@ -1,9 +1,10 @@
-import React, { useMemo } from "react";
+import React, { useMemo, useState } from "react";
 import { createEditor, Node } from "slate";
 import { Slate, Editable, withReact } from "slate-react";
 import { EditeurT } from "./interfaces";
 import { withHistory } from "slate-history";
 import { isEqual } from "lodash";
+import * as S from "./Styled";
 
 export interface BlocI {
   value: Node[];
@@ -13,25 +14,39 @@ export interface BlocI {
 
 const Bloc = ({ value, onChange, refEditor }: BlocI) => {
   const editor = useMemo(() => withReact(withHistory(createEditor())), []);
-
+  const [isSelected, setIsSelected] = useState(false);
   return (
-    <Slate
-      editor={editor}
-      value={value}
-      onChange={val => {
-        if (!isEqual(value, val)) {
-          onChange(val);
-        }
-      }}
-    >
-      <Editable
-        onFocus={() => {
-          refEditor(editor);
-        }}
-        spellCheck
-        renderLeaf={props => <Leaf {...props} />}
-      />
-    </Slate>
+    <S.BlocCtn>
+      <S.Bloc selected={isSelected}>
+        <Slate
+          editor={editor}
+          value={value}
+          onChange={val => {
+            console.log("change");
+
+            if (!isEqual(value, val)) {
+              onChange(val);
+            }
+          }}
+        >
+          <Editable
+            onFocus={(e: any) => {
+              setIsSelected(true);
+              refEditor(editor);
+              console.log("focus");
+              e.persist();
+              console.log(e);
+            }}
+            onBlur={() => {
+              setIsSelected(false);
+              console.log("blur");
+            }}
+            spellCheck
+            renderLeaf={props => <Leaf {...props} />}
+          />
+        </Slate>
+      </S.Bloc>
+    </S.BlocCtn>
   );
 };
 export default Bloc;
