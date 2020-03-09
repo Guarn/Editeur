@@ -1,56 +1,27 @@
 import React, { useState, useEffect } from "react";
-import { Node, Transforms } from "slate";
 import * as S from "./Styled";
-import Bloc from "./Bloc";
-import { EditeurT } from "./interfaces";
+import { EditorDefs, EditeurI } from "./interfaces";
 import ToolBar from "./Toolbar";
+import ChampEdition from "./ChampEdition";
 
-const Editeur: React.FC = () => {
-  const [editor, setEditor] = useState<EditeurT>({} as EditeurT);
-  const [value, setValue] = useState<Node[][]>([
-    [
-      {
-        type: "paragraph",
-        children: [{ text: "First paragraph." }]
-      }
-    ],
-    [
-      {
-        type: "paragraph",
-        children: [{ text: "Second paragraph." }]
-      }
-    ]
-  ]);
-
-  const changeValue = (val: Node[], index: number) => {
-    let newState = [...value];
-    newState[index] = val;
-    setValue(newState);
-  };
-
-  const changeEditor = (val: EditeurT) => {
-    Transforms.deselect(editor);
+const Editeur = ({ onChange, listeCours }: EditeurI) => {
+  const [editor, setEditor] = useState<EditorDefs | null>(null);
+  const [ii, iii] = useState(0);
+  const changeEditor = (val: EditorDefs | null) => {
     setEditor(val);
   };
 
-  useEffect(() => {}, []);
   return (
     <S.EditeurCtn>
       <ToolBar editor={editor} />
-      <S.ChampEditionCtn>
-        <S.ChampEdition>
-          {value.map((val: Node[], index: number) => {
-            return (
-              <Bloc
-                key={`Bloc-${index}`}
-                refEditor={ref => changeEditor(ref)}
-                value={val}
-                onChange={el => changeValue(el, index)}
-              />
-            );
-          })}
-        </S.ChampEdition>
-      </S.ChampEditionCtn>
+      <ChampEdition
+        listeCours={listeCours}
+        onChange={val => {
+          iii(ii + 1);
+          onChange && onChange(val);
+        }}
+        setEditor={changeEditor}
+      />
     </S.EditeurCtn>
   );
 };

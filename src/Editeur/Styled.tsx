@@ -52,15 +52,25 @@ export const BlocCtn = styled.div`
   position: relative;
 `;
 export const Bloc = styled.div<BlocT>`
+  background-color: rgba(0, 0, 0, 0);
+  transition: background-color 300ms;
+  &:hover {
+    background-color: rgba(0, 0, 0, 0.05);
+  }
   &:before {
     content: "";
-    border-left: 5px solid black;
+    border-left: 5px solid lightskyblue;
+    border-radius: 7px 0px 0px 7px;
     position: absolute;
-    left: -10px;
-    top: 0px;
-    height: ${props => (props.selected ? "90%" : "0%")};
-    transform: translateY(5%);
-    transition: height 300ms;
+    left: -15px;
+    top: 50%;
+    height: 100%;
+    transform-origin: top left;
+    transform: ${props =>
+      props.isActive
+        ? "translateY(-50%) scaleY(1)"
+        : "translateY(0%) scaleY(0)"};
+    transition: height 200ms, transform 200ms;
   }
 `;
 
